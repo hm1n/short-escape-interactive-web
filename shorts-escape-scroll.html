@@ -25,6 +25,7 @@
   --card-w:808px;
   --card-r:38px;
   --card-gap:60px;
+  --slot-h:124px;   /* 03 릴 창 높이 = 릴 한 칸 높이 */
 
   --display:"Black Han Sans","Apple SD Gothic Neo",sans-serif;
   --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
@@ -287,19 +288,47 @@ p.body strong{font-weight:600;color:var(--glow)}
   border:1px solid var(--wire);border-radius:14px;
   background:var(--screen);padding:18px;margin:8px 0 6px;
 }
+/* 릴 창(window). 높이는 --slot-h 하나로 카드와 릴 칸을 함께 묶는다 */
 .slot-card{
-  height:132px;border-radius:9px;background:var(--panel);
-  display:flex;flex-direction:column;justify-content:center;
-  padding:0 18px;gap:7px;overflow:hidden;
+  height:var(--slot-h);border-radius:9px;background:var(--panel);
+  position:relative;overflow:hidden;
 }
-.slot-card .verdict{font-family:var(--display);font-size:1.5rem;line-height:1}
-.slot-card .desc{font-size:.86rem;color:var(--dim);line-height:1.5}
+/* 위아래 그림자로 창처럼 보이게 — 실제 슬롯머신의 릴 개구부 */
+.slot-card::before{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  border-radius:9px;
+  box-shadow:inset 0 14px 16px -14px rgba(0,0,0,.85), inset 0 -14px 16px -14px rgba(0,0,0,.85);
+}
+.slot-reel{
+  position:absolute;top:0;left:0;right:0;
+  will-change:transform;
+}
+.slot-item{
+  height:var(--slot-h);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:0 18px;gap:9px;
+}
+.slot-item .emoji{font-size:1.4rem;line-height:1;letter-spacing:.14em}
+.slot-card.spinning .slot-reel{filter:blur(2.2px)}
+.slot-card .verdict{font-weight:600;font-size:1.04rem;line-height:1.3;color:var(--glow)}
+.slot-card .desc{font-size:.82rem;color:var(--dim);line-height:1.5}
 .slot-card.hit{background:rgba(255,74,53,.11);box-shadow:inset 0 0 0 1px rgba(255,74,53,.4)}
 .slot-card.hit .verdict{color:var(--pulse)}
+/* 릴이 멈추는 순간의 기계적 반동 */
+.slot-card.stop{animation:slotstop .26s cubic-bezier(.2,.8,.3,1)}
+@keyframes slotstop{
+  0%{transform:translateY(0)}
+  40%{transform:translateY(3px)}
+  100%{transform:translateY(0)}
+}
+.slot-btn[disabled]{opacity:.55;cursor:default;filter:none}
+/* 카드와 버튼을 나란히 — 릴 옆에 레버가 있는 배치 */
+.slot-stage{display:flex;gap:12px;align-items:stretch}
+.slot-stage .slot-card{flex:1 1 auto;min-width:0}
 .slot-btn{
-  width:100%;margin-top:14px;padding:15px;
-  background:var(--pulse);color:#fff;border:0;border-radius:9px;
-  font-family:var(--body);font-weight:600;font-size:.97rem;
+  flex:0 0 33%;height:var(--slot-h);padding:12px;
+  background:var(--pulse);color:#fff;border:0;border-radius:12px;
+  font-family:var(--body);font-weight:600;font-size:.97rem;line-height:1.35;
   cursor:pointer;transition:transform .1s ease,filter .2s ease;
 }
 .slot-btn:hover{filter:brightness(1.1)}
@@ -558,7 +587,6 @@ p.body{margin-bottom:13px}
 .presets button{padding:7px 10px}
 .presets-note{margin-top:9px}
 .slot{padding:15px}
-.slot-card{height:112px}
 .chart{padding:15px 12px 10px;margin-bottom:14px}
 .chain{padding:2px 15px;margin-bottom:14px}
 .chain div{padding:11px 0}
@@ -583,8 +611,8 @@ p.body{margin-bottom:13px}
 /* 세로가 짧은 화면에서도 히어로는 1화면 안에 끝나야 한다 —
    맨 아래 hero-meta("세고 있습니다")가 회수 사슬의 첫 고리라 접히면 안 된다 */
 @media (max-height:800px){
-  :root{--card-gap:64px}
-  .scene{padding-bottom:52px}
+  :root{--card-gap:52px}
+  .scene{padding-bottom:42px}
   .scene-in{padding:58px 88px 50px}
   .scene.hero .hero-mark{width:28px;height:46px;margin-bottom:18px}
   .scene.hero h1{font-size:clamp(2rem,9.6vw,2.85rem)}
@@ -595,10 +623,14 @@ p.body{margin-bottom:13px}
 
 /* 좁은 화면에서는 카드가 화면을 거의 채운다 */
 @media (max-width:460px){
-  :root{--card-r:28px;--card-gap:68px}
+  :root{--card-r:28px}
   .scene{padding-left:11px;padding-right:11px}
-  /* 카드 폭이 353px까지 줄어드는 구간 — 가로 88px을 그대로 쓰면 본문이 177px만 남는다 */
-  .scene-in{padding:76px 34px 64px}
+  /* 카드 폭이 353px까지 줄어드는 구간 — 기본 여백(76/88/64)을 그대로 쓰면
+     본문이 177px만 남고 대부분의 카드가 1화면을 넘긴다 */
+  .scene-in{padding:52px 22px 44px}
+  /* 릴 옆에 버튼을 두면 릴이 162px까지 좁아져 결과가 잘린다 — 버튼을 아래로 */
+  .slot-stage{flex-direction:column}
+  .slot-btn{flex:0 0 auto;width:100%;height:auto;padding:14px}
   footer{padding-left:11px;padding-right:11px}
 }
 
@@ -616,6 +648,9 @@ p.body{margin-bottom:13px}
   .grid i{transition:none}
   .chip,.presets button,.rc-actions button{transition:none}
   .hud.flash .hud-bar{animation:none}
+  .slot-reel{transition:none !important}
+  .slot-card.spinning .slot-reel{filter:none}
+  .slot-card.stop{animation:none}
 }
 </style>
 </head>
@@ -672,7 +707,7 @@ p.body{margin-bottom:13px}
   <section class="scene" data-label="02 연결">
     <div class="scene-in">
       <p class="eyebrow rv">02 &nbsp;연결 <i>— 켤 때</i></p>
-      <h2 class="rv">처음엔 내가 골랐지만<br>이제는 상황이 부른다</h2>
+      <h2 class="rv">쇼츠를 켜는 것도<br>습관이 된다</h2>
       <p class="body rv rv2">같은 상태에서 같은 행동이 반복되면, 특정 상황 자체가 쇼츠를 떠올리게 됩니다.</p>
       <div class="chain rv rv2" id="chain">
         <div data-k="심심할 때"><span>심심하다</span><i>→</i><span>쇼츠를 본다</span><s></s></div>
@@ -694,11 +729,18 @@ p.body{margin-bottom:13px}
       <h2 class="rv">다음에 뭐가 나올지<br>모른다</h2>
       <p class="body rv rv2">계속 보는 이유는 재미있어서만이 아닙니다. <strong>다음 영상이 무엇일지 모르고, 끝도 없기 때문</strong>입니다. 가끔 예상보다 훨씬 재미있는 게 나오면 "다음 것도 재밌을까?"라는 기대가 생깁니다.</p>
       <div class="slot rv rv2">
-        <div class="slot-card" id="slotCard">
-          <div class="verdict">다음 영상</div>
-          <div class="desc">눌러서 확인하세요</div>
+        <div class="slot-stage">
+          <div class="slot-card" id="slotCard">
+            <div class="slot-reel" id="slotReel">
+              <div class="slot-item">
+                <div class="emoji">❓ ❓ ❓</div>
+                <div class="verdict">다음 영상</div>
+                <div class="desc">눌러서 확인하세요</div>
+              </div>
+            </div>
+          </div>
+          <button class="slot-btn" id="slotBtn">다음 영상 보기</button>
         </div>
-        <button class="slot-btn" id="slotBtn">다음 영상 보기</button>
         <div class="slot-log" id="slotLog">확률은 미리 알려드립니다. 대박 10%, 괜찮음 30%, 시시함 60%.</div>
       </div>
       <p class="note rv rv3">슬롯머신은 레버를 당겨 결과를 확인하고, 피드는 스크롤해서 영상을 확인합니다. 구조가 같습니다. 차이는 비용입니다 — 슬롯머신은 돈을 걸어야 하지만 피드는 손가락 한 번이면 됩니다. 그래서 더 쉽게, 더 자주 반복됩니다.</p>
@@ -1083,24 +1125,81 @@ p.body{margin-bottom:13px}
 
   /* ---- 03 slot machine ---- */
   var pool = [
-    {w:60, v:'시시함', d:'3초 보고 넘겼습니다. 남는 게 없습니다.', hit:false},
-    {w:30, v:'괜찮음', d:'끝까지 봤습니다. 나쁘지 않았습니다.', hit:false},
-    {w:10, v:'대박', d:'두 번 봤습니다. 저장했습니다. 친구한테 보냈습니다.', hit:true}
+    {w:60, e:'💬 😔 🌀', v:'시시해. 다음 영상 ㄱㄱ',        d:'3초 보고 넘겼습니다. 남는 게 없습니다.',            hit:false},
+    {w:30, e:'👍 🙂 💡', v:'괜찮음. 재밌네요.',             d:'끝까지 봤습니다. 나쁘지 않았습니다.',               hit:false},
+    {w:10, e:'🎉 🤩 🎉', v:'대박!!!! 도파민 터진다!!!!',    d:'두 번 봤습니다. 저장했습니다. 친구한테 보냈습니다.', hit:true}
   ];
   var card = document.getElementById('slotCard');
+  var reel = document.getElementById('slotReel');
   var log = document.getElementById('slotLog');
-  document.getElementById('slotBtn').addEventListener('click', function(){
-    var r = Math.random()*100, acc = 0, pick = pool[0];
-    for (var i=0;i<pool.length;i++){ acc += pool[i].w; if (r < acc){ pick = pool[i]; break; } }
-    slotPresses++;
-    if (pick.hit) slotHits++;
-    card.className = 'slot-card' + (pick.hit?' hit':'');
-    card.innerHTML = '<div class="verdict">'+pick.v+'</div><div class="desc">'+pick.d+'</div>';
+  var slotBtn = document.getElementById('slotBtn');
+  var spinning = false;
+  var SPIN_MS = 1250, FILLERS = 9;
+
+  function drawPick(){
+    var r = Math.random()*100, acc = 0;
+    for (var i=0;i<pool.length;i++){ acc += pool[i].w; if (r < acc) return pool[i]; }
+    return pool[0];
+  }
+  function itemHTML(p){
+    return '<div class="slot-item"><div class="emoji">'+p.e+'</div>' +
+           '<div class="verdict">'+p.v+'</div>' +
+           '<div class="desc">'+p.d+'</div></div>';
+  }
+  function settle(res){
+    card.classList.toggle('hit', res.hit);
     var msg = '<b>'+slotPresses+'번</b> 눌렀고 대박은 <b>'+slotHits+'번</b>이었습니다.';
     if (slotPresses >= 4 && slotHits === 0) msg += ' 아직 안 나왔으니 다음엔 나올 것 같죠. 그 느낌이 설계입니다.';
     else if (slotPresses >= 4) msg += ' 그 몇 번이 나머지 전부를 견디게 만듭니다.';
     log.innerHTML = msg;
+  }
+
+  /* 릴을 돌린다. 누른 순간 결과는 이미 정해져 있고, 회전은 그걸 늦게 알려줄 뿐이다 —
+     슬롯머신이 실제로 하는 일이 이것이라 인터랙션 자체가 03의 주장을 수행한다. */
+  slotBtn.addEventListener('click', function(){
+    if (spinning) return;
+    var res = drawPick();
+    slotPresses++;
+    if (res.hit) slotHits++;
     paintReceipt();
+
+    if (calm){                     /* 모션 최소화: 회전 없이 결과만 */
+      reel.style.transition = 'none';
+      reel.style.transform = 'translateY(0)';
+      reel.innerHTML = itemHTML(res);
+      settle(res);
+      return;
+    }
+
+    spinning = true;
+    slotBtn.disabled = true;
+    card.classList.remove('hit','stop');
+    card.classList.add('spinning');
+
+    /* 현재 칸 → 필러 → 결과 순으로 띠를 만들고 끝까지 밀어 올린다 */
+    var strip = reel.children[0] ? reel.children[0].outerHTML : itemHTML(pool[0]);
+    for (var i=0;i<FILLERS;i++) strip += itemHTML(pool[Math.floor(Math.random()*pool.length)]);
+    strip += itemHTML(res);
+    reel.innerHTML = strip;
+    reel.style.transition = 'none';
+    reel.style.transform = 'translateY(0)';
+    void reel.offsetHeight;        /* 리플로우 — 없으면 트랜지션이 안 걸린다 */
+
+    var dist = (reel.children.length - 1) * card.clientHeight;
+    reel.style.transition = 'transform '+SPIN_MS+'ms cubic-bezier(.16,.72,.16,1)';
+    reel.style.transform = 'translateY(-'+dist+'px)';
+
+    setTimeout(function(){ card.classList.remove('spinning'); }, SPIN_MS - 280);
+    setTimeout(function(){
+      /* 결과 칸만 남기고 위치를 0으로 되돌린다 — 다음 회전이 늘 같은 조건에서 시작 */
+      reel.style.transition = 'none';
+      reel.style.transform = 'translateY(0)';
+      reel.innerHTML = itemHTML(res);
+      card.classList.add('stop');
+      settle(res);
+      spinning = false;
+      slotBtn.disabled = false;
+    }, SPIN_MS + 20);
   });
 
   /* ---- 05 counter ----
@@ -1147,15 +1246,42 @@ p.body{margin-bottom:13px}
   });
   calc();
 
-  /* ---- 08 narrowing grid ---- */
+  /* ---- 08 개인화 그리드 ----
+     열 수를 폭에서 계산하고 셀 수를 열×행으로 맞춘다.
+     auto-fill에 고정 개수(96)를 쓰면 마지막 줄이 중간에 끊겨 구간이 덜 찬 것처럼 보인다.
+     무늬는 한 번만 뽑아 두고 잘라 쓴다 — 리사이즈할 때마다 라벨이 새로 그려지면
+     "쌓인 기록"이라는 08의 의미가 깨진다. */
   var grid = document.getElementById('grid');
-  var cells = 96, html = '';
-  for (var i=0;i<cells;i++){
-    var r = Math.random();
-    var cls = r < .55 ? 'a' : (r < .8 ? 'b' : 'c');
-    html += '<i class="'+cls+'" style="transition-delay:'+(Math.random()*0.9).toFixed(2)+'s"></i>';
+  var GRID_ROWS = 4, GRID_MAX = 520, gridCols = 0;
+  var gridSeed = [];
+  for (var gi=0; gi<GRID_MAX; gi++){
+    var gr = Math.random();
+    gridSeed.push({
+      c: gr < .55 ? 'a' : (gr < .8 ? 'b' : 'c'),
+      d: (Math.random()*0.9).toFixed(2)
+    });
   }
-  grid.innerHTML = html;
+  function buildGrid(){
+    var w = grid.clientWidth;
+    if (!w) return;
+    var gap = parseFloat(getComputedStyle(grid).gap) || 5;
+    var min = window.innerWidth <= 420 ? 20 : 24;
+    var cols = Math.max(6, Math.floor((w + gap) / (min + gap)));
+    if (cols === gridCols) return;          /* 열 수가 그대로면 다시 그리지 않는다 */
+    gridCols = cols;
+    var total = Math.min(cols * GRID_ROWS, GRID_MAX);
+    grid.style.gridTemplateColumns = 'repeat('+cols+',1fr)';
+    var html = '';
+    for (var i=0;i<total;i++){
+      html += '<i class="'+gridSeed[i].c+'" style="transition-delay:'+gridSeed[i].d+'s"></i>';
+    }
+    grid.innerHTML = html;
+  }
+  buildGrid();
+  var gridTimer;
+  function regrid(){ clearTimeout(gridTimer); gridTimer = setTimeout(buildGrid, 120); }
+  if (window.ResizeObserver) new ResizeObserver(regrid).observe(grid);
+  else window.addEventListener('resize', regrid);
 
   /* ---- 10 receipt ---- */
   function topLabel(){
