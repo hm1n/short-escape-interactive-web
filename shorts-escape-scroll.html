@@ -384,6 +384,41 @@ input[type=range]::-moz-range-thumb{
 }
 .presets-note b{color:#CFC9D6;font-weight:400}
 
+/* ── 06 2단 레이아웃 (그래픽 왼쪽 / 텍스트 오른쪽) ── */
+.stopgrid{display:flex;align-items:center;gap:30px;margin-top:20px;margin-bottom:20px}
+.stopgrid .sg-visual{flex:0 0 auto}
+.stopgrid .sg-text{flex:1 1 auto;min-width:0}
+.stopgrid .sg-text p.body:last-child{margin-bottom:0}
+@media (max-width:600px){
+  .stopgrid{flex-direction:column;gap:22px}
+}
+
+/* ── Endless feed loop (06) ────────── */
+.feedloop{margin:0;display:flex;justify-content:flex-start}
+.fl-phone{
+  position:relative;width:clamp(148px,42vw,180px);aspect-ratio:9/16;
+  border:1px solid var(--wire);border-radius:18px;background:#0C0B11;overflow:hidden;
+}
+.fl-screen{position:absolute;inset:0;overflow:hidden}
+.fl-slide{position:absolute;inset:0;transform:translate3d(0,100%,0);will-change:transform;backface-visibility:hidden}
+.fl-art{position:absolute;inset:0;overflow:hidden}
+.fl-cap{position:absolute;left:13px;right:42px;bottom:15px;display:flex;align-items:center;gap:8px}
+.fl-av{flex:0 0 15px;width:15px;height:15px;border-radius:50%;background:rgba(242,239,232,.4)}
+.fl-cap span{flex:1;display:flex;flex-direction:column;gap:5px}
+.fl-cap b{display:block;height:4px;border-radius:2px;background:rgba(242,239,232,.32)}
+.fl-rail{position:absolute;right:9px;bottom:16px;z-index:9;display:flex;flex-direction:column;align-items:center;gap:15px}
+.fl-rail svg{width:17px;height:17px;display:block;stroke:rgba(242,239,232,.5);fill:none;stroke-width:1.6}
+.fl-s1 .fl-art{background:radial-gradient(circle at 50% 41%,rgba(255,74,53,.85) 0 20%,rgba(255,74,53,.13) 20.4% 32%,transparent 32.4%),linear-gradient(165deg,#1B1622,#0C0B11)}
+.fl-s2 .fl-art{background:linear-gradient(165deg,#12161C,#0C0B11)}
+.fl-s2 .fl-art::after{content:"";position:absolute;left:17%;right:17%;top:38%;height:19%;background:repeating-linear-gradient(to right,rgba(127,216,232,.72) 0 4px,transparent 4px 11px)}
+.fl-s3 .fl-art{background:linear-gradient(165deg,#1A1622,#0C0B11);display:grid;place-items:center}
+.fl-s3 .fl-art::after{content:"%";font-family:var(--display);font-size:4rem;line-height:1;color:var(--glow);opacity:.92;transform:translateY(-8%)}
+.fl-s4 .fl-art{background:linear-gradient(118deg,rgba(255,74,53,.6) 0 40%,transparent 40.3%),radial-gradient(rgba(242,239,232,.2) 1px,transparent 1.4px) 0 0/12px 12px,linear-gradient(165deg,#171320,#0C0B11)}
+.fl-s5 .fl-art{background:repeating-radial-gradient(circle at 50% 45%,rgba(127,216,232,.45) 0 1.5px,transparent 1.5px 13px),linear-gradient(165deg,#101520,#0C0B11)}
+.fl-s6 .fl-art{background:linear-gradient(165deg,#1A1622,#0C0B11)}
+.fl-s6 .fl-art::before{content:"";position:absolute;left:20%;top:30%;width:33%;aspect-ratio:1;background:rgba(242,239,232,.78)}
+.fl-s6 .fl-art::after{content:"";position:absolute;left:43%;top:44%;width:33%;aspect-ratio:1;background:rgba(255,74,53,.88)}
+
 /* ── Pivot block (2막 핵심) ────────── */
 .pivot{
   border-left:3px solid var(--pulse);
@@ -714,9 +749,32 @@ p.body{margin-bottom:13px}
     <div class="scene-in">
       <p class="eyebrow rv">06 &nbsp;정지 신호 <i>— 볼 때</i></p>
       <h2 class="rv">끝났다고<br>말해주는 게 없다</h2>
-      <p class="body rv rv2">책에는 챕터가 있고, 드라마에는 엔딩 크레딧이 있습니다. 전부 <strong>여기서 멈춰도 된다</strong>는 신호입니다. 우리는 그만둘 때 대개 이 신호에 기댑니다.</p>
-      <p class="body rv rv2">무한 피드에는 명확한 마지막이 없습니다. 끝이 없으니 끊어야 할 순간도 보이지 않고, 종료 시점을 100% 스스로 만들어야 합니다.</p>
-      <p class="body rv rv3">화면 맨 위를 보세요. 이 페이지에는 진행바가 있습니다. 얼마 남았는지 보이죠. <strong>피드에는 그게 없습니다.</strong> 있으면 사람들이 나갈 테니까요.</p>
+      <div class="stopgrid">
+        <div class="sg-visual">
+          <div class="feedloop rv rv2" id="feedLoop" role="img" aria-label="세로형 짧은 영상이 하나씩 위로 밀려 올라가며 다음 영상이 끊임없이 이어지는 화면">
+            <div class="fl-phone">
+              <div class="fl-screen" aria-hidden="true">
+                <div class="fl-slide fl-s1"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:72%"></b><b style="width:41%"></b></span></div></div>
+                <div class="fl-slide fl-s2"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:54%"></b><b style="width:66%"></b></span></div></div>
+                <div class="fl-slide fl-s3"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:83%"></b><b style="width:30%"></b></span></div></div>
+                <div class="fl-slide fl-s4"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:46%"></b><b style="width:59%"></b></span></div></div>
+                <div class="fl-slide fl-s5"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:76%"></b><b style="width:36%"></b></span></div></div>
+                <div class="fl-slide fl-s6"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:62%"></b><b style="width:48%"></b></span></div></div>
+              </div>
+              <div class="fl-rail" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 20.2S4.8 15.6 4.8 10.6A3.9 3.9 0 0 1 12 8.4a3.9 3.9 0 0 1 7.2 2.2c0 5-7.2 9.6-7.2 9.6z" stroke-linejoin="round"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M20 14.8a2 2 0 0 1-2 2H8.4L4.4 20V6a2 2 0 0 1 2-2H18a2 2 0 0 1 2 2z" stroke-linejoin="round"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M4.6 12.6V19.4h14.8v-6.8M12 4.2v11.2M12 4.2 7.9 8.3M12 4.2l4.1 4.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sg-text">
+          <p class="body rv rv2">책에는 챕터가 있고, 드라마에는 엔딩 크레딧이 있습니다. 전부 <strong>여기서 멈춰도 된다</strong>는 신호입니다. 우리는 그만둘 때 대개 이 신호에 기댑니다.</p>
+          <p class="body rv rv2">무한 피드에는 명확한 마지막이 없습니다. 끝이 없으니 끊어야 할 순간도 보이지 않고, 종료 시점을 100% 스스로 만들어야 합니다.</p>
+          <p class="body rv rv3">화면 맨 위를 보세요. 이 페이지에는 진행바가 있습니다. 얼마 남았는지 보이죠. <strong>피드에는 그게 없습니다.</strong> 있으면 사람들이 나갈 테니까요.</p>
+        </div>
+      </div>
       <div class="pivot rv rv3">
         <b>쇼츠는 내가 멈출 순간을 계속 뒤로 미룬다.</b>
         <span>여기까지가 "볼 때"입니다. 그렇게 오래 본 행동은 다음번에도 영향을 줍니다.</span>
@@ -910,6 +968,60 @@ p.body{margin-bottom:13px}
     },{threshold:.55});
     flashIO.observe(document.getElementById('sceneStop'));
   }
+
+  /* ---- 06 끝나지 않는 피드 (자동 반복) ---- */
+  (function(){
+    var wrapEl = document.getElementById('feedLoop');
+    if (!wrapEl) return;
+    var slides = Array.prototype.slice.call(wrapEl.querySelectorAll('.fl-slide'));
+    var n = slides.length;
+    if (n < 2) return;
+    var idx = 0, cur = slides[0], z = 1, onScreen = false, timer = null;
+    var EASE = 'transform .58s cubic-bezier(.22,.61,.36,1)';
+    var DWELL = calm ? 4200 : 2250;
+    slides.forEach(function(s){
+      s.style.transition = 'none';
+      s.style.transform = calm ? 'translate3d(0,0,0)' : 'translate3d(0,100%,0)';
+      s.style.opacity = calm ? '0' : '1';
+    });
+    cur.style.transform = 'translate3d(0,0,0)';
+    cur.style.opacity = '1';
+    cur.style.zIndex = z;
+    function step(){
+      var next = slides[(idx+1)%n];
+      next.style.transition = 'none';
+      next.style.zIndex = ++z;
+      if (calm){
+        next.style.transform = 'translate3d(0,0,0)';
+        next.style.opacity = '0';
+        void next.offsetWidth;
+        next.style.transition = 'opacity .7s ease';
+        cur.style.transition = 'opacity .7s ease';
+        next.style.opacity = '1';
+        cur.style.opacity = '0';
+      } else {
+        next.style.transform = 'translate3d(0,100%,0)';
+        void next.offsetWidth;
+        next.style.transition = EASE;
+        cur.style.transition = EASE;
+        next.style.transform = 'translate3d(0,0,0)';
+        cur.style.transform = 'translate3d(0,-100%,0)';
+      }
+      idx = (idx+1)%n;
+      cur = next;
+    }
+    function tick(){
+      timer = setTimeout(function(){
+        if (onScreen && !document.hidden) step();
+        tick();
+      }, DWELL);
+    }
+    var loopIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){ onScreen = e.isIntersecting; });
+    },{threshold:.25});
+    loopIO.observe(wrapEl);
+    tick();
+  })();
 
   /* ---- reveal ---- */
   var io = new IntersectionObserver(function(es){
