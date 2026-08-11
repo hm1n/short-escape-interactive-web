@@ -1,0 +1,644 @@
+:root{
+  --void:#0B0A0F;
+  --screen:#141119;
+  --panel:#1C1824;
+  --wire:#2E2837;
+  --glow:#F2EFE8;
+  --dim:#8A8296;
+  --pulse:#FF4A35;
+  --cool:#7FD8E8;
+  --day:#F2EFE8;
+  --day-ink:#100E17;
+  --day-wire:#CFC9BC;
+
+  /* 카드 = 스마트폰 화면. 폭·라운드는 여기서만 조절한다 */
+  --card-w:808px;
+  --card-r:38px;
+  --card-gap:60px;
+  --slot-h:124px;   /* 03 릴 창 높이 = 릴 한 칸 높이 */
+
+  --display:"Black Han Sans","Apple SD Gothic Neo",sans-serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--void);
+  color:var(--glow);
+  font-family:var(--body);
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  /* 한글은 어절 단위로 끊는다 — 단어 중간에서 잘리면 읽는 속도가 떨어진다 */
+  word-break:keep-all;
+  overflow-wrap:break-word;
+  transition:background .7s ease, color .7s ease;
+}
+body.daylight{background:var(--day);color:var(--day-ink)}
+
+.scroller{
+  height:100dvh;
+  overflow-y:scroll;
+  scroll-snap-type:y proximity;
+  scrollbar-width:none;
+}
+.scroller::-webkit-scrollbar{display:none}
+
+/* ── HUD ───────────────────────────── */
+.hud{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  padding:10px 16px 12px;
+  background:linear-gradient(to bottom,rgba(11,10,15,.94),rgba(11,10,15,0));
+  transition:background .7s ease;
+  pointer-events:none;
+}
+body.daylight .hud{background:linear-gradient(to bottom,rgba(242,239,232,.94),rgba(242,239,232,0))}
+
+/* HUD는 카드 폭에 맞춰 정렬 — 폰 화면 위에 얹힌 상태바처럼 읽히게 */
+.hud-bar,.hud-row{max-width:var(--card-w);margin-left:auto;margin-right:auto}
+
+.hud-bar{
+  height:3px;width:100%;
+  background:var(--wire);
+  border-radius:2px;overflow:hidden;
+  transition:background .7s ease;
+}
+body.daylight .hud-bar{background:var(--day-wire)}
+.hud-bar span{display:block;height:100%;width:0%;background:var(--pulse)}
+
+.hud-row{
+  display:flex;align-items:baseline;gap:14px;
+  margin-top:8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.04em;
+  color:var(--dim);
+}
+.hud-row b{color:var(--glow);font-weight:600;font-size:13px;transition:color .7s ease}
+body.daylight .hud-row b{color:var(--day-ink)}
+.hud-state{margin-left:auto;display:flex;align-items:center;gap:6px}
+.hud-state::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--pulse);
+  animation:blip 1.6s infinite;
+}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.15}}
+.hud-state.stopped::before{animation:none;background:var(--dim)}
+
+/* 06 회수 시점 — HUD를 한 번 인지시킨다 */
+.hud.flash .hud-bar{animation:hudflash 1.1s ease 3}
+@keyframes hudflash{
+  0%,100%{box-shadow:none}
+  50%{box-shadow:0 0 0 3px rgba(255,74,53,.3)}
+}
+
+/* ── Scenes ────────────────────────── */
+.scene{
+  min-height:100dvh;
+  scroll-snap-align:start;
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--card-gap) 16px 48px;
+  position:relative;
+}
+/* 콘텐츠는 전부 이 카드 안에서만 산다 — 카드 밖은 배경색뿐 */
+.scene-in{
+  position:relative;
+  width:100%;max-width:var(--card-w);margin:0 auto;
+  min-height:min(780px, calc(100dvh - var(--card-gap) - 48px));
+  display:flex;flex-direction:column;justify-content:center;
+  /* 가로는 4배, 세로는 2배 — 세로까지 4배로 두면 카드 절반이 1화면을 넘긴다 */
+  padding:76px 88px 64px;
+  background:var(--screen);
+  /* 베젤 — 화면이 아니라 기기로 읽히게 하는 유일한 요소. 반전 구간에서도 검게 남는다 */
+  border:9px solid #07060A;
+  border-radius:var(--card-r);
+  box-shadow:0 0 0 1px var(--wire), 0 36px 90px rgba(0,0,0,.62);
+  overflow:hidden;
+}
+/* 카드 상단 스피커 그릴 — 폰이라는 걸 말 안 하고 알려주는 유일한 장치 */
+.scene-in::after{
+  content:"";position:absolute;top:17px;left:50%;transform:translateX(-50%);
+  width:54px;height:5px;border-radius:3px;background:var(--wire);z-index:2;
+}
+/* 배경 레이어(::before)보다 콘텐츠가 위에 오도록 */
+.scene-in > *{position:relative;z-index:1}
+
+.scene.light{background:var(--day);color:var(--day-ink)}
+/* 11 반전 — 화면만 희게 뒤집히고 기기(베젤)는 그대로 검다 */
+.scene.light .scene-in{
+  background:var(--day);
+  box-shadow:0 0 0 1px rgba(16,14,23,.18), 0 36px 90px rgba(16,14,23,.28);
+}
+.scene.light .scene-in::after{background:var(--day-wire)}
+
+.eyebrow{
+  font-family:var(--mono);font-size:11px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:var(--pulse);
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow i{
+  font-style:normal;color:var(--dim);
+  letter-spacing:.1em;
+}
+.scene.light .eyebrow i{color:#7A7365}
+
+h1{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(2.6rem,10.5vw,4.9rem);
+  line-height:.98;letter-spacing:-.02em;
+}
+h2{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(1.85rem,6.6vw,2.9rem);
+  line-height:1.12;letter-spacing:-.015em;
+  margin-bottom:22px;
+}
+.tint{color:var(--pulse)}
+
+p.body{
+  font-size:clamp(.98rem,3.7vw,1.09rem);
+  line-height:1.78;color:#CFC9D6;
+  margin-bottom:16px;max-width:58ch;
+}
+.scene.light p.body{color:#3D3849}
+p.body strong{font-weight:600;color:var(--glow)}
+.scene.light p.body strong{color:var(--day-ink)}
+
+.note{
+  font-family:var(--mono);font-size:11.5px;line-height:1.7;
+  color:var(--dim);border-left:2px solid var(--wire);
+  padding-left:12px;margin-top:26px;max-width:52ch;
+}
+.scene.light .note{color:#7A7365;border-color:var(--day-wire)}
+
+.cue{
+  position:absolute;bottom:26px;left:0;right:0;
+  text-align:center;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.18em;color:var(--dim);
+}
+.cue span{display:inline-block;animation:drift 2.4s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(7px);opacity:1}}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.on{opacity:1;transform:none}
+.rv2{transition-delay:.12s}
+.rv3{transition-delay:.24s}
+
+/* ── Hero ──────────────────────────── */
+/* 배경 사진은 20% — 읽는 사람이 지금 있는 자리를 깔아두는 용도이지 주인공이 아니다 */
+.scene.hero .scene-in::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:url("/img/hero.jpg");
+  background-size:cover;background-position:center 38%;
+  opacity:.2;
+}
+.scene.hero .cue{z-index:1}   /* .cue는 이미 absolute — position을 덮어쓰면 안 된다 */
+
+.hero-kicker{
+  display:flex;align-items:center;gap:12px;
+  margin-top:22px;
+  font-family:var(--mono);font-size:clamp(12.5px,3.5vw,14.5px);
+  letter-spacing:.04em;color:var(--glow);
+}
+.hero-kicker::before{
+  content:"";flex:0 0 26px;height:1px;background:var(--pulse);
+}
+.hero-mark{
+  width:34px;height:58px;border:1.5px solid var(--wire);
+  border-radius:6px;margin-bottom:30px;position:relative;overflow:hidden;
+}
+.hero-mark i{
+  position:absolute;left:0;right:0;height:33.3%;
+  background:var(--panel);border-bottom:1.5px solid var(--wire);
+  animation:feed 3.4s linear infinite;
+}
+@keyframes feed{from{top:-33.3%}to{top:100%}}
+.hero-sub{
+  margin-top:28px;font-size:.99rem;line-height:1.75;
+  color:#CFC9D6;max-width:44ch;
+}
+.hero-steps{
+  margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--dim);
+}
+.hero-steps b{
+  color:var(--glow);font-weight:500;
+  border:1px solid var(--wire);border-radius:999px;padding:6px 12px;
+}
+.hero-meta{
+  margin-top:30px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.05em;color:var(--dim);line-height:1.9;
+}
+
+/* ── Trigger chips (01) ────────────── */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 16px}
+.chip{
+  font-family:var(--body);font-weight:400;font-size:.92rem;
+  padding:10px 15px;border-radius:999px;
+  background:var(--screen);border:1px solid var(--wire);
+  color:#CFC9D6;cursor:pointer;
+  transition:border-color .18s ease,background .18s ease,color .18s ease;
+}
+.chip:hover{border-color:var(--dim)}
+.chip.sel{background:rgba(255,74,53,.12);border-color:rgba(255,74,53,.55);color:var(--glow)}
+.chip-out{
+  font-family:var(--mono);font-size:11.5px;line-height:1.85;
+  color:var(--dim);border-left:2px solid var(--wire);
+  padding-left:12px;min-height:3.7em;max-width:52ch;
+}
+.chip-out b{color:var(--pulse);font-weight:500}
+
+/* ── Cue → routine chain (02) ──────── */
+.chain{
+  border:1px solid var(--wire);border-radius:14px;
+  background:var(--screen);padding:6px 18px;margin:6px 0 20px;
+}
+.chain div{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:12.5px;color:#CFC9D6;
+  padding:13px 0;border-bottom:1px solid var(--wire);
+}
+.chain div:last-child{border-bottom:0}
+.chain i{font-style:normal;color:var(--pulse)}
+.chain s{text-decoration:none;color:var(--pulse);margin-left:auto;font-size:10.5px;letter-spacing:.06em}
+.chain div.sel{color:var(--glow)}
+.chain-live{
+  font-family:var(--mono);font-size:11.5px;line-height:1.8;
+  color:var(--dim);border-left:2px solid var(--wire);
+  padding-left:12px;margin-bottom:20px;max-width:52ch;
+}
+.chain-live b{color:var(--pulse);font-weight:500}
+
+/* ── Slot (variable reward) ────────── */
+.slot{
+  border:1px solid var(--wire);border-radius:14px;
+  background:var(--screen);padding:18px;margin:8px 0 6px;
+}
+/* 릴 창(window). 높이는 --slot-h 하나로 카드와 릴 칸을 함께 묶는다 */
+.slot-card{
+  height:var(--slot-h);border-radius:9px;background:var(--panel);
+  position:relative;overflow:hidden;
+}
+/* 위아래 그림자로 창처럼 보이게 — 실제 슬롯머신의 릴 개구부 */
+.slot-card::before{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  border-radius:9px;
+  box-shadow:inset 0 14px 16px -14px rgba(0,0,0,.85), inset 0 -14px 16px -14px rgba(0,0,0,.85);
+}
+.slot-reel{
+  position:absolute;top:0;left:0;right:0;
+  will-change:transform;
+}
+.slot-item{
+  height:var(--slot-h);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:0 18px;gap:9px;
+}
+.slot-item .emoji{font-size:1.4rem;line-height:1;letter-spacing:.14em}
+.slot-card.spinning .slot-reel{filter:blur(2.2px)}
+.slot-card .verdict{font-weight:600;font-size:1.04rem;line-height:1.3;color:var(--glow)}
+.slot-card .desc{font-size:.82rem;color:var(--dim);line-height:1.5}
+.slot-card.hit{background:rgba(255,74,53,.11);box-shadow:inset 0 0 0 1px rgba(255,74,53,.4)}
+.slot-card.hit .verdict{color:var(--pulse)}
+/* 릴이 멈추는 순간의 기계적 반동 */
+.slot-card.stop{animation:slotstop .26s cubic-bezier(.2,.8,.3,1)}
+@keyframes slotstop{
+  0%{transform:translateY(0)}
+  40%{transform:translateY(3px)}
+  100%{transform:translateY(0)}
+}
+.slot-btn[disabled]{opacity:.55;cursor:default;filter:none}
+/* 카드와 버튼을 나란히 — 릴 옆에 레버가 있는 배치 */
+.slot-stage{display:flex;gap:12px;align-items:stretch}
+.slot-stage .slot-card{flex:1 1 auto;min-width:0}
+.slot-btn{
+  flex:0 0 33%;height:var(--slot-h);padding:12px;
+  background:var(--pulse);color:#fff;border:0;border-radius:12px;
+  font-family:var(--body);font-weight:600;font-size:.97rem;line-height:1.35;
+  cursor:pointer;transition:transform .1s ease,filter .2s ease;
+}
+.slot-btn:hover{filter:brightness(1.1)}
+.slot-btn:active{transform:scale(.985)}
+.slot-log{
+  font-family:var(--mono);font-size:11px;color:var(--dim);
+  margin-top:12px;line-height:1.7;min-height:2.6em;
+}
+.slot-log b{color:var(--glow)}
+
+/* ── Dopamine chart ────────────────── */
+.chart{
+  border:1px solid var(--wire);border-radius:14px;
+  background:var(--screen);padding:18px 14px 12px;margin-bottom:18px;
+}
+.chart svg{display:block;width:100%;height:auto}
+.chart .path{
+  fill:none;stroke-width:2.5;stroke-linecap:round;
+  stroke-dasharray:600;stroke-dashoffset:600;
+  transition:stroke-dashoffset 1.6s ease .25s;
+}
+.chart.on .path{stroke-dashoffset:0}
+.legend{
+  display:flex;gap:18px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:10.5px;color:var(--dim);
+  padding:12px 4px 2px;
+}
+.legend i{display:inline-block;width:16px;height:2.5px;margin-right:6px;vertical-align:middle}
+
+/* ── Counter ───────────────────────── */
+.calc{
+  border:1px solid var(--wire);border-radius:14px;
+  background:var(--screen);padding:20px 18px;margin-bottom:18px;
+}
+.calc label{
+  font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+  color:var(--dim);display:block;margin-bottom:14px;
+}
+.calc label b{color:var(--glow);font-size:14px}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:2px;
+  background:var(--wire);border-radius:2px;outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--pulse);cursor:pointer;border:3px solid var(--screen);
+}
+input[type=range]::-moz-range-thumb{
+  width:22px;height:22px;border-radius:50%;border:3px solid var(--screen);
+  background:var(--pulse);cursor:pointer;
+}
+.calc-out{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--wire);border-radius:9px;overflow:hidden;margin-top:22px;
+}
+.calc-out div{background:var(--panel);padding:15px 12px}
+.calc-out span{
+  display:block;font-family:var(--mono);font-size:10px;
+  letter-spacing:.08em;color:var(--dim);margin-bottom:7px;
+}
+.calc-out b{font-family:var(--display);font-weight:400;font-size:1.4rem;line-height:1}
+.calc-out b em{font-style:normal;font-family:var(--body);font-size:.72rem;font-weight:400;color:var(--dim);margin-left:3px}
+.calc-kicker{
+  margin-top:16px;font-size:.92rem;line-height:1.6;color:#CFC9D6;
+}
+.calc-kicker b{color:var(--pulse);font-weight:600}
+.presets{
+  display:flex;flex-wrap:wrap;gap:7px;
+  margin-top:18px;padding-top:16px;border-top:1px solid var(--wire);
+}
+.presets button{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;
+  padding:8px 11px;border-radius:7px;cursor:pointer;
+  background:transparent;border:1px solid var(--wire);color:var(--dim);
+  transition:border-color .18s ease,color .18s ease;
+}
+.presets button:hover{border-color:var(--dim);color:#CFC9D6}
+.presets button.sel{border-color:rgba(255,74,53,.55);color:var(--pulse)}
+.presets-note{
+  font-family:var(--mono);font-size:10.5px;line-height:1.7;
+  color:var(--dim);margin-top:11px;
+}
+.presets-note b{color:#CFC9D6;font-weight:400}
+
+/* ── 06 2단 레이아웃 (그래픽 왼쪽 / 텍스트 오른쪽) ── */
+.stopgrid{display:flex;align-items:center;gap:30px;margin-top:20px;margin-bottom:20px}
+.stopgrid .sg-visual{flex:0 0 auto}
+.stopgrid .sg-text{flex:1 1 auto;min-width:0}
+.stopgrid .sg-text p.body:last-child{margin-bottom:0}
+@media (max-width:600px){
+  .stopgrid{flex-direction:column;gap:22px}
+}
+
+/* ── Endless feed loop (06) ────────── */
+.feedloop{margin:0;display:flex;justify-content:flex-start}
+.fl-phone{
+  position:relative;width:clamp(148px,42vw,180px);aspect-ratio:9/16;
+  border:1px solid var(--wire);border-radius:18px;background:#0C0B11;overflow:hidden;
+}
+.fl-screen{position:absolute;inset:0;overflow:hidden}
+.fl-slide{position:absolute;inset:0;transform:translate3d(0,100%,0);will-change:transform;backface-visibility:hidden}
+.fl-art{position:absolute;inset:0;overflow:hidden}
+.fl-cap{position:absolute;left:13px;right:42px;bottom:15px;display:flex;align-items:center;gap:8px}
+.fl-av{flex:0 0 15px;width:15px;height:15px;border-radius:50%;background:rgba(242,239,232,.4)}
+.fl-cap span{flex:1;display:flex;flex-direction:column;gap:5px}
+.fl-cap b{display:block;height:4px;border-radius:2px;background:rgba(242,239,232,.32)}
+.fl-rail{position:absolute;right:9px;bottom:16px;z-index:9;display:flex;flex-direction:column;align-items:center;gap:15px}
+.fl-rail svg{width:17px;height:17px;display:block;stroke:rgba(242,239,232,.5);fill:none;stroke-width:1.6}
+.fl-s1 .fl-art{background:radial-gradient(circle at 50% 41%,rgba(255,74,53,.85) 0 20%,rgba(255,74,53,.13) 20.4% 32%,transparent 32.4%),linear-gradient(165deg,#1B1622,#0C0B11)}
+.fl-s2 .fl-art{background:linear-gradient(165deg,#12161C,#0C0B11)}
+.fl-s2 .fl-art::after{content:"";position:absolute;left:17%;right:17%;top:38%;height:19%;background:repeating-linear-gradient(to right,rgba(127,216,232,.72) 0 4px,transparent 4px 11px)}
+.fl-s3 .fl-art{background:linear-gradient(165deg,#1A1622,#0C0B11);display:grid;place-items:center}
+.fl-s3 .fl-art::after{content:"%";font-family:var(--display);font-size:4rem;line-height:1;color:var(--glow);opacity:.92;transform:translateY(-8%)}
+.fl-s4 .fl-art{background:linear-gradient(118deg,rgba(255,74,53,.6) 0 40%,transparent 40.3%),radial-gradient(rgba(242,239,232,.2) 1px,transparent 1.4px) 0 0/12px 12px,linear-gradient(165deg,#171320,#0C0B11)}
+.fl-s5 .fl-art{background:repeating-radial-gradient(circle at 50% 45%,rgba(127,216,232,.45) 0 1.5px,transparent 1.5px 13px),linear-gradient(165deg,#101520,#0C0B11)}
+.fl-s6 .fl-art{background:linear-gradient(165deg,#1A1622,#0C0B11)}
+.fl-s6 .fl-art::before{content:"";position:absolute;left:20%;top:30%;width:33%;aspect-ratio:1;background:rgba(242,239,232,.78)}
+.fl-s6 .fl-art::after{content:"";position:absolute;left:43%;top:44%;width:33%;aspect-ratio:1;background:rgba(255,74,53,.88)}
+
+/* ── Pivot block (2막 핵심) ────────── */
+.pivot{
+  border-left:3px solid var(--pulse);
+  padding:4px 0 4px 16px;margin-top:28px;max-width:52ch;
+}
+.pivot b{
+  display:block;font-family:var(--display);font-weight:400;
+  font-size:clamp(1.15rem,4.4vw,1.4rem);line-height:1.35;
+}
+.pivot span{display:block;margin-top:9px;font-size:.92rem;line-height:1.65;color:var(--dim)}
+
+/* ── Narrowing grid ────────────────── */
+/* 셀 크기를 고정하고 열 수를 폭에 맡긴다 — 카드가 넓어져도 도트가 커지지 않게 */
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(24px,1fr));gap:5px;
+  margin-bottom:20px;
+}
+.grid i{
+  aspect-ratio:1;border-radius:2px;
+  background:var(--wire);
+  transition:background 1.1s ease;
+}
+.grid.on i.a{background:var(--pulse)}
+.grid.on i.b{background:rgba(255,74,53,.35)}
+.grid.on i.c{background:var(--wire)}
+
+/* ── Loop diagram ──────────────────── */
+.loop{list-style:none;margin:6px 0 16px;padding:0}
+.loop li{display:flex;gap:14px;padding-bottom:20px;position:relative}
+.loop li::before{
+  content:"";position:absolute;left:13px;top:30px;bottom:2px;
+  width:1px;background:var(--wire);
+}
+.loop li:last-child::before{display:none}
+.loop em{
+  flex:0 0 27px;height:27px;border-radius:50%;
+  display:grid;place-items:center;font-style:normal;
+  font-family:var(--mono);font-size:11px;
+  background:var(--panel);border:1px solid var(--wire);color:var(--dim);
+  position:relative;z-index:1;
+}
+.loop b{display:block;font-weight:600;font-size:1rem;margin-bottom:5px;line-height:1.4}
+.loop span{display:block;font-size:.91rem;line-height:1.68;color:var(--dim);max-width:46ch}
+.loop u{
+  text-decoration:none;display:inline-block;margin-top:6px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+  color:var(--pulse);border:1px solid rgba(255,74,53,.35);
+  border-radius:999px;padding:3px 9px;
+}
+.loop-back{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;
+  color:var(--pulse);border:1px dashed var(--wire);border-radius:10px;
+  padding:13px 14px;text-align:center;
+}
+
+/* ── Receipt ───────────────────────── */
+.receipt{
+  background:var(--day);color:var(--day-ink);
+  border-radius:4px;padding:26px 22px;
+  font-family:var(--mono);font-size:12.5px;line-height:1.9;
+  max-width:100%;
+  box-shadow:0 22px 60px rgba(0,0,0,.35);
+}
+
+/* ── 10 기록 카드 내부 배경 ───────── */
+.scene-10 .scene-in::before{
+  content:"";position:absolute;inset:0;
+  background:url("/img/scene10.jpg") center center/cover no-repeat;
+  opacity:.2;pointer-events:none;z-index:0;
+}
+
+/* ── 07 재방문 카드 내부 배경 ─────── */
+.scene-07 .scene-in::before{
+  content:"";position:absolute;inset:0;
+  background-image:url("/img/scene07.jpg");
+  background-size:cover;background-position:center center;
+  opacity:.2;pointer-events:none;z-index:0;
+}
+.receipt .rc-head{
+  font-weight:600;letter-spacing:.14em;font-size:11px;
+  padding-bottom:12px;margin-bottom:14px;
+  border-bottom:1px dashed var(--day-wire);
+}
+.receipt .rc-row{display:flex;justify-content:space-between;gap:16px}
+.receipt .rc-row b{font-weight:600;text-align:right}
+.receipt .rc-total{
+  margin-top:14px;padding-top:14px;
+  border-top:1px dashed var(--day-wire);
+  font-size:11px;line-height:1.75;color:#4A4456;
+}
+.receipt .rc-total b{color:var(--day-ink)}
+
+.rc-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.rc-actions button{
+  font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+  padding:11px 16px;border-radius:8px;cursor:pointer;
+  background:transparent;border:1px solid var(--wire);color:var(--dim);
+  transition:border-color .18s ease,color .18s ease;
+}
+.rc-actions button:hover{border-color:var(--pulse);color:var(--pulse)}
+.rc-actions button[disabled]{opacity:.5;cursor:default}
+.rc-hint{
+  font-family:var(--mono);font-size:10.5px;line-height:1.7;
+  color:var(--dim);margin-top:11px;max-width:44ch;
+}
+
+/* ── Closing ───────────────────────── */
+.verdict-line{
+  margin-top:30px;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.05em;line-height:1.9;color:#7A7365;
+  border-top:1px solid var(--day-wire);padding-top:18px;max-width:52ch;
+}
+.verdict-line b{color:var(--day-ink);font-weight:600}
+
+footer{
+  padding:0 16px 70px;max-width:var(--card-w);margin:0 auto;
+  font-family:var(--mono);font-size:10.5px;line-height:1.9;color:var(--dim);
+}
+body.daylight footer{color:#7A7365}
+footer p{margin-bottom:10px;max-width:60ch}
+
+:focus-visible{outline:2px solid var(--pulse);outline-offset:3px;border-radius:3px}
+
+/* ── 카드 밀도 조정 ────────────────────
+   카드 폭이 680 → 404로 좁아져 같은 글이 훨씬 길어졌다.
+   간격을 조여 대부분의 카드가 1화면에 들어오게 한다. */
+h1{font-size:clamp(2.3rem,11vw,3.3rem)}
+h2{font-size:clamp(1.7rem,7vw,2.15rem);margin-bottom:15px}
+p.body{margin-bottom:13px}
+.note{margin-top:12px}
+.eyebrow{margin-bottom:14px}
+.calc{padding:14px 13px;margin-bottom:12px}
+.calc-out{margin-top:15px}
+.calc-out div{padding:12px 10px}
+.calc label{margin-bottom:10px}
+.presets{margin-top:13px;padding-top:12px}
+.presets button{padding:7px 10px}
+.presets-note{margin-top:9px}
+.slot{padding:15px}
+.chart{padding:15px 12px 10px;margin-bottom:14px}
+.chain{padding:2px 15px;margin-bottom:14px}
+.chain div{padding:11px 0}
+.chain-live{margin-bottom:16px}
+.loop{margin:2px 0 10px}
+.loop li{padding-bottom:9px;gap:12px}
+.loop li::before{top:27px}
+.loop em{flex-basis:25px;height:25px;font-size:11px}
+.loop b{font-size:.94rem;margin-bottom:2px}
+.loop span{font-size:.86rem;line-height:1.55}
+.loop u{margin-top:4px}
+.loop-back{padding:9px 12px}
+.grid{margin-bottom:16px}
+.pivot{margin-top:22px}
+.calc-out b{font-size:1.24rem}
+.calc-kicker{margin-top:11px;font-size:.88rem}
+.receipt{padding:22px 18px;font-size:12px}
+.rc-actions{margin-top:13px}
+.rc-actions button{padding:10px 14px}
+.rc-hint{margin-top:9px}
+
+/* 세로가 짧은 화면에서도 히어로는 1화면 안에 끝나야 한다 —
+   맨 아래 hero-meta("세고 있습니다")가 회수 사슬의 첫 고리라 접히면 안 된다 */
+@media (max-height:800px){
+  :root{--card-gap:52px}
+  .scene{padding-bottom:42px}
+  .scene-in{padding:58px 88px 50px}
+  .scene.hero .hero-mark{width:28px;height:46px;margin-bottom:18px}
+  .scene.hero h1{font-size:clamp(2rem,9.6vw,2.85rem)}
+  .scene.hero .hero-sub{margin-top:16px}
+  .scene.hero .hero-steps{margin-top:14px}
+  .scene.hero .hero-meta{margin-top:18px}
+}
+
+/* 좁은 화면에서는 카드가 화면을 거의 채운다 */
+@media (max-width:460px){
+  :root{--card-r:28px}
+  .scene{padding-left:11px;padding-right:11px}
+  /* 카드 폭이 353px까지 줄어드는 구간 — 기본 여백(76/88/64)을 그대로 쓰면
+     본문이 177px만 남고 대부분의 카드가 1화면을 넘긴다 */
+  .scene-in{padding:52px 22px 44px}
+  /* 릴 옆에 버튼을 두면 릴이 162px까지 좁아져 결과가 잘린다 — 버튼을 아래로 */
+  .slot-stage{flex-direction:column}
+  .slot-btn{flex:0 0 auto;width:100%;height:auto;padding:14px}
+  footer{padding-left:11px;padding-right:11px}
+}
+
+@media (max-width:420px){
+  .calc-out{grid-template-columns:1fr 1fr}
+  .calc-out div:last-child{grid-column:1/-1}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(20px,1fr))}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none;transition:none}
+  .chart .path{stroke-dashoffset:0;transition:none}
+  .hero-mark i,.cue span,.hud-state::before{animation:none}
+  .grid i{transition:none}
+  .chip,.presets button,.rc-actions button{transition:none}
+  .hud.flash .hud-bar{animation:none}
+  .slot-reel{transition:none !important}
+  .slot-card.spinning .slot-reel{filter:none}
+  .slot-card.stop{animation:none}
+}

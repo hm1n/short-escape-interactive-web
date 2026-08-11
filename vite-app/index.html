@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>왜 못 끊는가 — 켤 때, 볼 때, 다시 켤 때</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="hud" id="hud">
+  <div class="hud-bar"><span id="hudFill"></span></div>
+  <div class="hud-row">
+    <span><b id="hudTime">00:00</b> 체류</span>
+    <span><b id="hudSwipe">0</b> 스와이프</span>
+    <span class="hud-state" id="hudState">기록 중</span>
+  </div>
+</div>
+
+<div class="scroller" id="scroller">
+
+  <!-- HERO -->
+  <section class="scene hero" data-label="시작">
+    <div class="scene-in">
+      <div class="hero-mark"><i></i></div>
+      <h1 class="rv on">5분만 보려다<br>한 시간이<br><span class="tint">지나 있다</span></h1>
+      <p class="hero-kicker rv rv2">우리가 쇼츠에 중독되는 이유</p>
+      <p class="hero-sub rv rv2">잠깐 쉬려고 켰는데 정신을 차려보니 한 시간입니다. 쇼츠를 못 끊는 건 의지의 문제가 아니라 구조의 문제입니다.</p>
+      <p class="hero-steps rv rv2"><b>켤 때</b><b>볼 때</b><b>다시 켤 때</b></p>
+      <p class="hero-sub rv rv3" style="margin-top:16px">각 순간마다 다른 힘이 작동합니다. 그 셋을 순서대로 따라가 봅니다.</p>
+      <p class="hero-meta rv rv3">
+        방식 &nbsp;·&nbsp; 아래로 스와이프<br>
+        참고 &nbsp;·&nbsp; 이 페이지는 당신의 스와이프 수와 체류 시간을 세고 있습니다<br>
+        마지막 &nbsp;·&nbsp; 그 기록을 돌려드립니다
+      </p>
+    </div>
+    <div class="cue"><span>↓ 스와이프</span></div>
+  </section>
+
+  <!-- 01 방아쇠 -->
+  <section class="scene" data-label="01 방아쇠">
+    <div class="scene-in">
+      <p class="eyebrow rv">01 &nbsp;방아쇠 <i>— 켤 때</i></p>
+      <h2 class="rv">재미보다 먼저<br>작동하는 게 있다</h2>
+      <p class="body rv rv2">"보고 싶어서"보다 <strong>"지금 상태에서 벗어나고 싶어서"</strong> 켜는 쪽에 가깝습니다. 언제 손이 가는지 하나 골라보세요.</p>
+      <div class="chips rv rv2" id="chips" role="group" aria-label="쇼츠를 켜게 되는 상황">
+        <button class="chip sel" data-k="심심할 때" data-from="심심함" data-to="재미있는 영상">심심할 때</button>
+        <button class="chip" data-k="스트레스받을 때" data-from="스트레스" data-to="새로운 자극">스트레스받을 때</button>
+        <button class="chip" data-k="하기 싫을 때" data-from="하기 싫음" data-to="잠깐의 도피">하기 싫을 때</button>
+        <button class="chip" data-k="자기 전" data-from="잠들기 싫음" data-to="끝없는 다음 편">자기 전</button>
+      </div>
+      <p class="chip-out rv rv2" id="chipOut">하나를 고르면, 그 상태에 쇼츠가 무엇을 대신 해주는지 보여드립니다.</p>
+      <p class="body rv rv3" style="margin-top:22px">쇼츠는 지금의 불편한 상태를 <strong>빠르게 잊게</strong> 해줍니다. 해결한 게 아니라 잠깐 가려준 것이지만, 그 속도가 워낙 빠릅니다.</p>
+    </div>
+    <div class="cue"><span>↓</span></div>
+  </section>
+
+  <!-- 02 연결 -->
+  <section class="scene" data-label="02 연결">
+    <div class="scene-in">
+      <p class="eyebrow rv">02 &nbsp;연결 <i>— 켤 때</i></p>
+      <h2 class="rv">쇼츠를 켜는 것도<br>습관이 된다</h2>
+      <p class="body rv rv2">같은 상태에서 같은 행동이 반복되면, 특정 상황 자체가 쇼츠를 떠올리게 됩니다.</p>
+      <div class="chain rv rv2" id="chain">
+        <div data-k="심심할 때"><span>심심하다</span><i>→</i><span>쇼츠를 본다</span><s></s></div>
+        <div data-k="스트레스받을 때"><span>스트레스를 받는다</span><i>→</i><span>쇼츠를 본다</span><s></s></div>
+        <div data-k="자기 전"><span>침대에 눕는다</span><i>→</i><span>쇼츠를 본다</span><s></s></div>
+        <div data-k="하기 싫을 때"><span>일하기 싫다</span><i>→</i><span>쇼츠를 본다</span><s></s></div>
+      </div>
+      <p class="chain-live rv rv2" id="chainLive">지금 이 페이지에서도 같은 게 돌아가는 중입니다.<br>문단이 끝난다 → 스와이프한다 · <b>0회</b> 반복</p>
+      <p class="body rv rv3">처음에는 내가 쇼츠를 선택합니다. 반복되면 <strong>상황이 쇼츠를 떠올리게</strong> 합니다. 불편한 상태 → 쇼츠. 이 연결이 만들어집니다.</p>
+      <p class="note rv rv3">여기까지가 "켤 때"입니다. 그리고 한 번 켜고 나면, 왜 이렇게 오래 보게 될까요.</p>
+    </div>
+    <div class="cue"><span>↓ 볼 때</span></div>
+  </section>
+
+  <!-- 03 모름 -->
+  <section class="scene" data-label="03 모름">
+    <div class="scene-in">
+      <p class="eyebrow rv">03 &nbsp;모름 <i>— 볼 때</i></p>
+      <h2 class="rv">다음에 뭐가 나올지<br>모른다</h2>
+      <p class="body rv rv2">계속 보는 이유는 재미있어서만이 아닙니다. <strong>다음 영상이 무엇일지 모르고, 끝도 없기 때문</strong>입니다. 가끔 예상보다 훨씬 재미있는 게 나오면 "다음 것도 재밌을까?"라는 기대가 생깁니다.</p>
+      <div class="slot rv rv2">
+        <div class="slot-stage">
+          <div class="slot-card" id="slotCard">
+            <div class="slot-reel" id="slotReel">
+              <div class="slot-item">
+                <div class="emoji">❓ ❓ ❓</div>
+                <div class="verdict">다음 영상</div>
+                <div class="desc">눌러서 확인하세요</div>
+              </div>
+            </div>
+          </div>
+          <button class="slot-btn" id="slotBtn">다음 영상 보기</button>
+        </div>
+        <div class="slot-log" id="slotLog">확률은 미리 알려드립니다. 대박 10%, 괜찮음 30%, 시시함 60%.</div>
+      </div>
+      <p class="note rv rv3">슬롯머신은 레버를 당겨 결과를 확인하고, 피드는 스크롤해서 영상을 확인합니다. 구조가 같습니다. 차이는 비용입니다 — 슬롯머신은 돈을 걸어야 하지만 피드는 손가락 한 번이면 됩니다. 그래서 더 쉽게, 더 자주 반복됩니다.</p>
+    </div>
+    <div class="cue"><span>↓</span></div>
+  </section>
+
+  <!-- 04 피크 -->
+  <section class="scene" data-label="04 피크">
+    <div class="scene-in">
+      <p class="eyebrow rv">04 &nbsp;피크 <i>— 볼 때</i></p>
+      <h2 class="rv">가장 좋은 순간은<br>넘기기 직전이다</h2>
+      <div class="chart rv rv2" id="chart">
+        <svg viewBox="0 0 620 210" role="img" aria-label="기대 곡선과 실제 만족 곡선 비교">
+          <line x1="30" y1="180" x2="600" y2="180" stroke="#2E2837" stroke-width="1"/>
+          <line x1="30" y1="20" x2="30" y2="180" stroke="#2E2837" stroke-width="1"/>
+          <path class="path" stroke="#FF4A35" d="M30,168 C90,150 118,42 150,40 C176,38 182,150 210,166 C250,148 278,40 310,38 C336,36 342,150 370,166 C410,148 438,40 470,38 C496,36 502,150 530,166 C556,158 578,150 600,148"/>
+          <path class="path" stroke="#7FD8E8" d="M30,172 C90,168 120,120 150,122 C190,124 230,150 270,152 C310,154 350,144 390,148 C430,152 470,158 510,160 C545,162 575,166 600,168"/>
+          <text x="150" y="26" fill="#8A8296" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">스와이프</text>
+          <text x="310" y="26" fill="#8A8296" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">스와이프</text>
+          <text x="470" y="26" fill="#8A8296" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle">스와이프</text>
+        </svg>
+        <div class="legend">
+          <span><i style="background:#FF4A35"></i>기대 — 다음이 뭔지 모를 때</span>
+          <span><i style="background:#7FD8E8"></i>실제 만족 — 보고 난 뒤</span>
+        </div>
+      </div>
+      <p class="body rv rv3">도파민은 보상 자체보다 <strong>예상을 벗어난 보상</strong>에 반응합니다. 예상대로면 조용하고, 예상보다 좋으면 튑니다. 그래서 피크는 영상을 보는 동안이 아니라 <strong>넘기는 그 순간</strong>에 옵니다.</p>
+      <p class="body rv rv3">한 시간을 보고도 뭘 봤는지 기억이 안 나는 게 이 때문입니다. 기억에 남는 건 콘텐츠가 아니라 넘기는 감각이었습니다.</p>
+    </div>
+    <div class="cue"><span>↓</span></div>
+  </section>
+
+  <!-- 05 단위 -->
+  <section class="scene" data-label="05 단위">
+    <div class="scene-in">
+      <p class="eyebrow rv">05 &nbsp;단위 <i>— 볼 때</i></p>
+      <h2 class="rv">영상 하나는 짧다<br>합계만 길다</h2>
+      <p class="body rv rv2">30초 → 30초 → 30초 → 30초. 하나가 짧기 때문에 <strong>"하나만 더", "이것만 보고", "다음 것까지만"</strong> 같은 작은 선택이 계속 이어집니다. 매번의 판단은 항상 합리적이고, 합계만 비합리적입니다.</p>
+      <div class="calc rv rv2">
+        <label>하루에 보는 개수 <b id="cntOut">110</b>개 <span style="color:#8A8296">· 개당 평균 30초</span></label>
+        <input type="range" id="cnt" min="10" max="400" step="1" value="110" aria-label="하루에 보는 영상 개수">
+        <div class="calc-out">
+          <div><span>하루</span><b id="perDay">55<em>분</em></b></div>
+          <div><span>한 달</span><b id="perMonth">28<em>시간</em></b></div>
+          <div><span>1년</span><b id="perYear">13.9<em>일</em></b></div>
+        </div>
+        <p class="calc-kicker" id="kicker">1년에 <b>335시간</b>. 잠도 안 자고 13.9일 연속으로 이것만 한 셈입니다.</p>
+        <div class="presets" id="presets" role="group" aria-label="조사 기관별 기준값으로 맞추기">
+          <button type="button" data-min="55" data-src="메조미디어 2024 타겟 리포트 — 20대 하루 평균 55분">20대 55분</button>
+          <button type="button" data-min="126.6" data-src="대학내일20대연구소 2025 — Z세대 평일 126.6분">Z세대 평일 126.6분</button>
+          <button type="button" data-min="21" data-src="컨슈머인사이트 2025 — 한 번 켜면 평균 21분">1회 21분</button>
+        </div>
+        <p class="presets-note" id="presetNote">조사마다 숫자가 다릅니다. 눌러서 각 기준에 맞춰볼 수 있습니다.</p>
+      </div>
+      <p class="note rv rv3">기준값 출처는 버튼을 누르면 표시되고, 전체 목록은 맨 아래에 있습니다. 개당 30초는 추정치이며 조사값이 아닙니다. 슬라이더는 본인 감각에 맞춰보세요 — 대개 실제보다 낮게 잡습니다.</p>
+    </div>
+    <div class="cue"><span>↓</span></div>
+  </section>
+
+  <!-- 06 정지 신호 -->
+  <section class="scene" data-label="06 정지 신호" id="sceneStop">
+    <div class="scene-in">
+      <p class="eyebrow rv">06 &nbsp;정지 신호 <i>— 볼 때</i></p>
+      <h2 class="rv">끝났다고<br>말해주는 게 없다</h2>
+      <div class="stopgrid">
+        <div class="sg-visual">
+          <div class="feedloop rv rv2" id="feedLoop" role="img" aria-label="세로형 짧은 영상이 하나씩 위로 밀려 올라가며 다음 영상이 끊임없이 이어지는 화면">
+            <div class="fl-phone">
+              <div class="fl-screen" aria-hidden="true">
+                <div class="fl-slide fl-s1"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:72%"></b><b style="width:41%"></b></span></div></div>
+                <div class="fl-slide fl-s2"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:54%"></b><b style="width:66%"></b></span></div></div>
+                <div class="fl-slide fl-s3"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:83%"></b><b style="width:30%"></b></span></div></div>
+                <div class="fl-slide fl-s4"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:46%"></b><b style="width:59%"></b></span></div></div>
+                <div class="fl-slide fl-s5"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:76%"></b><b style="width:36%"></b></span></div></div>
+                <div class="fl-slide fl-s6"><div class="fl-art"></div><div class="fl-cap"><i class="fl-av"></i><span><b style="width:62%"></b><b style="width:48%"></b></span></div></div>
+              </div>
+              <div class="fl-rail" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 20.2S4.8 15.6 4.8 10.6A3.9 3.9 0 0 1 12 8.4a3.9 3.9 0 0 1 7.2 2.2c0 5-7.2 9.6-7.2 9.6z" stroke-linejoin="round"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M20 14.8a2 2 0 0 1-2 2H8.4L4.4 20V6a2 2 0 0 1 2-2H18a2 2 0 0 1 2 2z" stroke-linejoin="round"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M4.6 12.6V19.4h14.8v-6.8M12 4.2v11.2M12 4.2 7.9 8.3M12 4.2l4.1 4.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sg-text">
+          <p class="body rv rv2">책에는 챕터가 있고, 드라마에는 엔딩 크레딧이 있습니다. 전부 <strong>여기서 멈춰도 된다</strong>는 신호입니다. 우리는 그만둘 때 대개 이 신호에 기댑니다.</p>
+          <p class="body rv rv2">무한 피드에는 명확한 마지막이 없습니다. 끝이 없으니 끊어야 할 순간도 보이지 않고, 종료 시점을 100% 스스로 만들어야 합니다.</p>
+          <p class="body rv rv3">화면 맨 위를 보세요. 이 페이지에는 진행바가 있습니다. 얼마 남았는지 보이죠. <strong>피드에는 그게 없습니다.</strong> 있으면 사람들이 나갈 테니까요.</p>
+        </div>
+      </div>
+      <div class="pivot rv rv3">
+        <b>쇼츠는 내가 멈출 순간을 계속 뒤로 미룬다.</b>
+        <span>여기까지가 "볼 때"입니다. 그렇게 오래 본 행동은 다음번에도 영향을 줍니다.</span>
+      </div>
+    </div>
+    <div class="cue"><span>↓ 다시 켤 때</span></div>
+  </section>
+
+  <!-- 07 재방문 -->
+  <section class="scene scene-07" data-label="07 재방문">
+    <div class="scene-in">
+      <p class="eyebrow rv">07 &nbsp;재방문 <i>— 다시 켤 때</i></p>
+      <h2 class="rv">몇 초짜리 자극이<br>습관이 되는 과정</h2>
+      <p class="body rv rv2">심심함 → 쇼츠 → 새로운 자극 → 즉각적인 기분 전환. 이 과정에 몇 초밖에 걸리지 않습니다. 이만큼 빠르게 기분을 바꿔주는 선택지는 많지 않습니다.</p>
+      <p class="body rv rv2">빠른 전환 경험이 반복되면 쇼츠는 <strong>"기분을 바꾸고 싶을 때 바로 찾는 것"</strong>이 되고, 즉각적인 수단으로 학습됩니다.</p>
+      <p class="body rv rv3" id="recallLine">그래서 비슷한 상황이 다시 찾아오면 "쇼츠나 볼까"가 자연스럽게 떠오릅니다.</p>
+    </div>
+    <div class="cue"><span>↓</span></div>
+  </section>
+
+  <!-- 08 개인화 -->
+  <section class="scene" data-label="08 개인화">
+    <div class="scene-in">
+      <p class="eyebrow rv">08 &nbsp;개인화 <i>— 다시 켤 때</i></p>
+      <h2 class="rv">피드는 당신보다<br>당신을 빨리 배운다</h2>
+      <div class="grid rv rv2" id="grid"></div>
+      <p class="body rv rv2">보는 동안 시청 시간 · 스킵 · 다시 보기가 전부 데이터로 남습니다. 2초 만에 넘기면 부정, 끝까지 보면 긍정, 두 번 보면 강한 긍정. 30분이면 <strong>수백 개의 라벨</strong>이 쌓입니다.</p>
+      <p class="body rv rv3">본다 → 학습한다 → 추천한다 → 다시 본다. 그래서 20분 뒤의 피드는 처음 열었을 때의 피드가 아닙니다. 점점 끊기 어려워지는 게 착각이 아니라 <strong>실제로 어려워지고 있는 것</strong>입니다.</p>
+    </div>
+    <div class="cue"><span>↓ 구조</span></div>
+  </section>
+
+  <!-- 09 사이클 -->
+  <section class="scene" data-label="09 사이클">
+    <div class="scene-in">
+      <p class="eyebrow rv">09 &nbsp;사이클 <i>— 결국 하나로 이어진다</i></p>
+      <h2 class="rv">결국 하나의<br>사이클 된다</h2>
+      <ol class="loop rv rv2">
+        <li><em>①</em><div><b>시작은 사소하다</b><span>심심함 · 습관 · 회피 · 재미 · 휴식 · 호기심</span></div></li>
+        <li><em>②</em><div><b>쇼츠를 켠다</b><span>빠르게 새로운 자극을 얻습니다.</span></div></li>
+        <li><em>③</em><div><b>계속 본다</b><span>다음 영상이 궁금하고 끝이 없어서 멈추기 어렵습니다.</span><u id="loopSwipe">이 페이지에서 0회 스와이프</u></div></li>
+        <li><em>④</em><div><b>다시 찾는다</b><span>즉각적인 보상 경험이 쌓이면서, 불편할 때 가장 먼저 떠오르는 선택지가 됩니다.</span></div></li>
+        <li><em>⑤</em><div><b>추천이 개인화된다</b><span>오래 본 행동이 다음 추천에 반영됩니다.</span></div></li>
+        <li><em>⑥</em><div><b>다시 켠다</b><span>비슷한 상황에서 쇼츠를 다시 찾습니다.</span></div></li>
+      </ol>
+      <div class="loop-back rv rv2">↺ 상황이 쇼츠를 부르고, 쇼츠가 다시 다음 행동을 만든다</div>
+      <p class="note rv rv3">다만 정직하게: 짧은 영상이 집중력을 <em>망친다</em>는 인과관계는 아직 연구자들 사이에서 논쟁 중입니다. 확실한 건 시간을 쓴다는 것, 그리고 이 사이클 겪었다는 감각은 많은 사람이 보고한다는 것입니다.</p>
+    </div>
+    <div class="cue"><span>↓ 기록 확인</span></div>
+  </section>
+
+  <!-- 10 기록 -->
+  <section class="scene scene-10" data-label="10 기록">
+    <div class="scene-in">
+      <p class="eyebrow rv">10 &nbsp;기록 <i>— 당신의 세션</i></p>
+      <h2 class="rv">방금 그 사이클을<br>여기서 겪으셨습니다</h2>
+      <div class="receipt rv rv2" id="receipt">
+        <div class="rc-head">SESSION RECORD</div>
+        <div class="rc-row"><span>체류 시간</span><b id="rTime">00:00</b></div>
+        <div class="rc-row"><span>스와이프</span><b id="rSwipe">0회</b></div>
+        <div class="rc-row"><span>가장 오래 머문 구간</span><b id="rTop">—</b></div>
+        <div class="rc-row"><span>"다음 영상" 누른 횟수</span><b id="rSlot">0회</b></div>
+        <div class="rc-row"><span>본인이 고른 방아쇠</span><b id="rTrigger">고르지 않음</b></div>
+        <div class="rc-row"><span>본인이 잡은 하루 개수</span><b id="rCount">110개 (기본값)</b></div>
+        <div class="rc-total">
+          이 페이지는 당신을 붙잡을 이유가 없고, 개인화도 안 하고, 다음 콘텐츠를 예측해 넣지도 않습니다. 그런데도 <b id="rClose">여기까지</b> 오셨습니다.<br><br>
+          실제 쇼츠는 <b>여기서 멈추지 않습니다.</b>
+        </div>
+      </div>
+      <div class="rc-actions rv rv3">
+        <button type="button" id="saveBtn">이미지로 저장</button>
+        <button type="button" id="shareBtn" hidden>공유하기</button>
+      </div>
+      <p class="body rv rv3" style="margin-top:26px">①에서 ⑥까지, 방금 축소판으로 한 바퀴 돌았습니다. 다른 점은 하나뿐입니다.</p>
+    </div>
+    <div class="cue"><span>↓ 여기서 나갑니다</span></div>
+  </section>
+
+  <!-- 11 마무리 (light) -->
+  <section class="scene light" data-label="11 마무리">
+    <div class="scene-in">
+      <p class="eyebrow rv">11 &nbsp;마무리 <i>— 결론</i></p>
+      <h2 class="rv">그래서 우리는<br>결국 정상이다</h2>
+      <p class="body rv rv2">쇼츠를 못 끊는 게 이상한 게 아닙니다. 내가 약해서가 아니라 <strong>다시 켜고, 계속 보고, 또 켜게 되는 구조가 연결되어 있기 때문</strong>입니다.</p>
+      <p class="body rv rv2">의지의 문제가 아니라 구조의 문제입니다. 구조를 이기려면 의지를 더 쓰는 것 말고 다른 방법이 필요하다는 뜻이기도 합니다.</p>
+      <p class="verdict-line rv rv3">
+        이 페이지도 방금 같은 구조로 당신을 붙잡았습니다.<br>
+        차이는 하나였습니다 — <b>여기엔 끝이 있었습니다.</b><br>
+        화면 맨 위 진행바가 지금 <b id="closeFill">100%</b>입니다.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <p>참고 · 회피 동기에서 출발하는 습관 형성, 상황 단서와 행동의 연합, 가변 비율 강화 스케줄(행동이 불규칙한 보상에서 가장 오래 지속됨), 보상 예측 오차 기반 도파민 반응, 정지 신호(stopping cue) 부재와 종료 판단의 관계, 행동 데이터 기반 추천 피드백 루프 — 행동심리학·신경과학·추천 시스템의 널리 알려진 개념들을 피드 환경에 적용해 설명했습니다.</p>
+    <p>수치 출처 · 20대 하루 평균 숏폼 이용 55분 — 메조미디어 2024 타겟 리포트. Z세대 숏폼 시청 평일 126.6분·주말 139.0분 — 대학내일20대연구소 정기조사(2025.4). 한 번 켜면 평균 21분 시청, 숏폼 이용자의 75%가 유튜브 쇼츠 — 컨슈머인사이트(2025). 개당 평균 30초는 쇼츠 길이 분포(대체로 20~40초)를 근거로 한 추정치이며, 조사값이 아닙니다.</p>
+    <p>사진 · 첫 화면 배경 — Rasheed Kemy, Unsplash.</p>
+    <p>측정 · 스와이프 수는 화면 전환 횟수, 체류 시간은 탭이 활성 상태일 때만 셉니다. 기록은 브라우저 메모리에만 있고 새로고침하면 사라집니다. 어디로도 전송되지 않습니다. 영수증 이미지도 이 브라우저 안에서 만들어지며, 공유 여부는 전적으로 본인이 결정합니다.</p>
+  </footer>
+
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

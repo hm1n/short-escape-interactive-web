@@ -1,0 +1,4 @@
+# cache
+.token-optimizer
+node_modules
+dist
