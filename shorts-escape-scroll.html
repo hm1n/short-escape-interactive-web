@@ -1238,15 +1238,42 @@ p.body{margin-bottom:13px}
   });
   calc();
 
-  /* ---- 08 narrowing grid ---- */
+  /* ---- 08 개인화 그리드 ----
+     열 수를 폭에서 계산하고 셀 수를 열×행으로 맞춘다.
+     auto-fill에 고정 개수(96)를 쓰면 마지막 줄이 중간에 끊겨 구간이 덜 찬 것처럼 보인다.
+     무늬는 한 번만 뽑아 두고 잘라 쓴다 — 리사이즈할 때마다 라벨이 새로 그려지면
+     "쌓인 기록"이라는 08의 의미가 깨진다. */
   var grid = document.getElementById('grid');
-  var cells = 96, html = '';
-  for (var i=0;i<cells;i++){
-    var r = Math.random();
-    var cls = r < .55 ? 'a' : (r < .8 ? 'b' : 'c');
-    html += '<i class="'+cls+'" style="transition-delay:'+(Math.random()*0.9).toFixed(2)+'s"></i>';
+  var GRID_ROWS = 4, GRID_MAX = 520, gridCols = 0;
+  var gridSeed = [];
+  for (var gi=0; gi<GRID_MAX; gi++){
+    var gr = Math.random();
+    gridSeed.push({
+      c: gr < .55 ? 'a' : (gr < .8 ? 'b' : 'c'),
+      d: (Math.random()*0.9).toFixed(2)
+    });
   }
-  grid.innerHTML = html;
+  function buildGrid(){
+    var w = grid.clientWidth;
+    if (!w) return;
+    var gap = parseFloat(getComputedStyle(grid).gap) || 5;
+    var min = window.innerWidth <= 420 ? 20 : 24;
+    var cols = Math.max(6, Math.floor((w + gap) / (min + gap)));
+    if (cols === gridCols) return;          /* 열 수가 그대로면 다시 그리지 않는다 */
+    gridCols = cols;
+    var total = Math.min(cols * GRID_ROWS, GRID_MAX);
+    grid.style.gridTemplateColumns = 'repeat('+cols+',1fr)';
+    var html = '';
+    for (var i=0;i<total;i++){
+      html += '<i class="'+gridSeed[i].c+'" style="transition-delay:'+gridSeed[i].d+'s"></i>';
+    }
+    grid.innerHTML = html;
+  }
+  buildGrid();
+  var gridTimer;
+  function regrid(){ clearTimeout(gridTimer); gridTimer = setTimeout(buildGrid, 120); }
+  if (window.ResizeObserver) new ResizeObserver(regrid).observe(grid);
+  else window.addEventListener('resize', regrid);
 
   /* ---- 10 receipt ---- */
   function topLabel(){
